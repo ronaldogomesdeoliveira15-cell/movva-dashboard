@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movva Control - Editável</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--bg:#eef4fb;--surface:#fff;--soft:#f5f8fd;--sidebar:#0f172a;--sidebar2:#111827;--text:#172033;--muted:#6b7280;--line:#e5e7eb;--blue:#2563eb;--green:#16a34a;--red:#dc2626;--amber:#d97706;--violet:#7c3aed;--shadow:0 18px 40px rgba(15,23,42,.08);--radius:20px}
+    *{box-sizing:border-box} body{margin:0;font-family:'Inter',sans-serif;background:linear-gradient(180deg,#eef4fb 0%,#f8fafc 100%);color:var(--text)}
+    .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .sidebar{background:linear-gradient(180deg,var(--sidebar),var(--sidebar2));color:#fff;padding:24px 18px;display:flex;flex-direction:column;gap:22px;position:sticky;top:0;height:100vh}
+    .brand{display:flex;align-items:center;gap:12px}.brand-mark{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#22c55e,#0ea5e9);font-weight:800}
+    .brand h1{margin:0;font-size:18px}.brand p{margin:3px 0 0;font-size:12px;color:rgba(255,255,255,.65)}
+    .menu,.menu-bottom{display:grid;gap:8px}.menu a,.menu-bottom a{text-decoration:none;color:rgba(255,255,255,.82);padding:12px 14px;border-radius:14px;font-size:14px;display:flex;align-items:center;gap:10px;transition:.25s}
+    .menu a:hover,.menu a.active,.menu-bottom a:hover{background:rgba(255,255,255,.08);color:#fff;transform:translateX(4px)}
+    .side-block{margin-top:auto;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px}
+    .side-block h3{margin:0 0 8px;font-size:14px}.side-block p{margin:0 0 12px;font-size:12px;line-height:1.55;color:rgba(255,255,255,.72)}.side-block button{width:100%;border:0;border-radius:12px;padding:12px 14px;background:#fff;color:#111827;font-weight:700;cursor:pointer}
+    .main{padding:26px}.topbar{margin-bottom:18px}.topbar h2{margin:0;font-size:30px;letter-spacing:-.03em}.topbar p{margin:8px 0 0;color:var(--muted);font-size:14px}
+    .toolbar,.grid-2,.grid-forms,.stats{display:grid;gap:18px}.toolbar{grid-template-columns:repeat(4,minmax(140px,1fr));margin-bottom:18px}.grid-2{grid-template-columns:1.35fr 1fr;margin-bottom:18px}.grid-forms{grid-template-columns:1fr 1fr;margin-bottom:18px}.stats{grid-template-columns:repeat(4,1fr);margin-bottom:18px}
+    .control,.panel,.stat{background:var(--surface);box-shadow:var(--shadow);border-radius:18px}.control{padding:12px 14px}.control label{display:block;font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:600}.control select,.control input,.form-grid input,.form-grid select,.form-grid textarea,.editable{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;background:#fff;color:var(--text)}
+    .panel{padding:22px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}.panel-head h3{margin:0;font-size:18px}.panel-head p{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .hero{display:grid;grid-template-columns:1.35fr 1fr;gap:18px;margin-bottom:18px}.hero-main{background:linear-gradient(135deg,#1d4ed8 0%,#0f766e 100%);color:#fff;position:relative;overflow:hidden}.hero-main:after{content:'';position:absolute;right:-60px;top:-70px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.09)}
+    .hero-main h3{margin:0;font-size:15px;opacity:.88}.hero-value{font-size:38px;font-weight:800;letter-spacing:-.05em;margin-top:12px}.hero-note{margin-top:8px;font-size:13px;opacity:.84;max-width:56ch;line-height:1.55}.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}.hero-mini{background:rgba(255,255,255,.1);padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,.08)}.hero-mini span{display:block;font-size:12px;opacity:.8;margin-bottom:6px}.hero-mini strong{font-size:18px}
+    .mini-list{display:grid;gap:12px}.mini-item{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--soft);border-radius:16px}.mini-item small{display:block;color:var(--muted);margin-bottom:4px}.mini-item strong{font-size:15px}.badge{padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700}.ok{background:#dcfce7;color:#16a34a}.warn{background:#fef3c7;color:#d97706}.risk{background:#fee2e2;color:#dc2626}
+    .stat{padding:20px;position:relative;overflow:hidden}.stat:before{content:'';position:absolute;right:-16px;top:-16px;width:78px;height:78px;border-radius:50%;background:currentColor;opacity:.10}.stat .label{font-size:13px;color:var(--muted);display:block;margin-bottom:10px}.stat .amount{font-size:28px;font-weight:800;letter-spacing:-.04em}.stat .trend{margin-top:10px;font-size:13px;font-weight:700}.blue{color:var(--blue)}.green{color:var(--green)}.red{color:var(--red)}.violet{color:var(--violet)}
+    .form-grid{display:grid;gap:12px}.form-grid.two{grid-template-columns:1fr 1fr}.btn{border:0;border-radius:14px;padding:12px 15px;font-weight:700;font-size:14px;cursor:pointer}.btn.primary{background:var(--blue);color:#fff}.btn.secondary{background:var(--soft);color:var(--text)}.btn.danger{background:#fee2e2;color:#b91c1c}
+    .chart-wrap{height:315px} table{width:100%;border-collapse:collapse;font-size:13px} th,td{padding:13px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top} th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700}.pill.in{background:#dcfce7;color:#16a34a}.pill.out{background:#fee2e2;color:#dc2626}.pill.high{background:#fef3c7;color:#d97706}
+    .agenda-list,.supplier-list,.category-list,.sale-list{display:grid;gap:12px}.agenda-item,.supplier-card,.category-item,.sale-card{padding:14px;border-radius:18px;background:var(--soft)}.agenda-item{display:grid;grid-template-columns:86px 1fr;gap:14px;align-items:start}.date-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px;text-align:center}.date-card strong{display:block;font-size:24px;line-height:1}.date-card span{display:block;color:var(--muted);font-size:12px;margin-top:6px}.agenda-item h4,.supplier-card h4,.sale-card h4{margin:0 0 6px;font-size:14px}.agenda-item p,.supplier-card p,.category-item p,.sale-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}.agenda-meta,.supplier-meta,.sale-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.tag{padding:7px 10px;border-radius:999px;font-size:11px;font-weight:700}.tag.blue{background:#dbeafe;color:#2563eb}.tag.green{background:#dcfce7;color:#16a34a}.tag.amber{background:#fef3c7;color:#d97706}.tag.violet{background:#ede9fe;color:#7c3aed}
+    .supplier-card{border:1px solid var(--line);background:#fff}.supplier-top,.sale-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.muted{color:var(--muted)}
+    .inline-editor{display:grid;gap:10px;grid-template-columns:repeat(4,1fr)} .inline-editor input,.inline-editor select{padding:10px 10px;border:1px solid var(--line);border-radius:10px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .section-block{display:block}.hidden-section{display:none}
+    @media (max-width:1260px){.hero,.grid-2,.grid-forms{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:repeat(2,1fr)}.inline-editor{grid-template-columns:1fr 1fr}}
+    @media (max-width:920px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.main{padding:18px}}
+    @media (max-width:680px){.toolbar,.hero-grid,.stats,.form-grid.two,.inline-editor{grid-template-columns:1fr}.hero-value{font-size:32px}.topbar h2{font-size:22px}.chart-wrap{height:260px}.agenda-item{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">M</div><div><h1>Movva Control</h1><p>100% editável</p></div></div>
+    <nav class="menu">
+      <a class="active nav-link" href="#dashboard">📊 Visão geral</a>
+      <a class="nav-link" href="#sales">🧾 Vendas</a>
+      <a class="nav-link" href="#financeiro">💰 Financeiro</a>
+      <a class="nav-link" href="#margem">📈 Margem</a>
+      <a class="nav-link" href="#fornecedores">🏭 Fornecedores</a>
+      <a class="nav-link" href="#categorias">🗂️ Categorias</a>
+      <a class="nav-link" href="#agenda">📅 Agenda</a>
+    </nav>
+    <nav class="menu-bottom"><a href="#" onclick="exportCSV()">⬇️ Exportar CSV</a><a href="#" onclick="saveLocal()">💾 Salvar dados</a></nav>
+    <div class="side-block"><h3>Como funciona</h3><p>Você edita tudo: categorias, vendas, custos, fornecedores e compromissos. O lucro e a margem são calculados por venda, não como total geral.</p><button onclick="loadSample()">Carregar exemplo</button></div>
+  </aside>
+  <main class="main">
+    <div class="topbar"><h2>Central pessoal de operação</h2><p>Modelo pensado para ser alterado por você, sem travar campos e sem depender de sistema pronto.</p></div>
+    <section class="toolbar">
+      <div class="control"><label>Período</label><select><option>Junho 2026</option><option>Maio 2026</option><option>Abril 2026</option></select></div>
+      <div class="control"><label>Conta principal</label><select><option>Conta principal</option><option>Reserva</option><option>Caixa</option></select></div>
+      <div class="control"><label>Meta de lucro %</label><input id="goalProfit" value="18" /></div>
+      <div class="control"><label>Limite de gastos</label><input id="expenseLimit" value="18000" /></div>
+    </section>
+    <section id="dashboard" class="section-block hero">
+      <div class="panel hero-main">
+        <h3>Resultado consolidado</h3>
+        <div class="hero-value" id="heroBalance">R$ 0,00</div>
+        <div class="hero-note">Saldo geral, entradas e custos do período. O lucro real vem da diferença entre venda e custo de cada venda.</div>
+        <div class="hero-grid">
+          <div class="hero-mini"><span>Entradas</span><strong id="heroIncome">R$ 0,00</strong></div>
+          <div class="hero-mini"><span>Saídas</span><strong id="heroExpense">R$ 0,00</strong></div>
+          <div class="hero-mini"><span>Lucro total</span><strong id="heroProfit">R$ 0,00</strong></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h3>Leitura rápida</h3><p>O que está mais importante agora</p></div><span class="badge ok">Atualizado</span></div>
+        <div class="mini-list">
+          <div class="mini-item"><div><small>Margem média por venda</small><strong id="avgMargin">0%</strong></div><span class="badge ok">Venda</span></div>
+          <div class="mini-item"><div><small>Produtos/serviços</small><strong id="saleCount">0</strong></div><span class="badge warn">Base</span></div>
+          <div class="mini-item"><div><small>Compromissos abertos</small><strong id="taskCount">0</strong></div><span class="badge risk">Agenda</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="stats">
+      <div class="stat blue"><span class="label">Saldo</span><div class="amount" id="balanceCard">R$ 0,00</div><div class="trend">Caixa do período</div></div>
+      <div class="stat green"><span class="label">Lucro</span><div class="amount" id="profitCard">R$ 0,00</div><div class="trend">Calculado por vendas</div></div>
+      <div class="stat red"><span class="label">Custos</span><div class="amount" id="costCard">R$ 0,00</div><div class="trend">Custos diretos + despesas</div></div>
+      <div class="stat violet"><span class="label">Margem média</span><div class="amount" id="marginCard">0%</div><div class="trend">Por venda</div></div>
+    </section>
+    <section id="sales" class="grid-forms">
+      <div class="panel">
+        <div class="panel-head"><div><h3>Nova venda</h3><p>Defina custo e preço de cada venda</p></div><span class="chip">Editável</span></div>
+        <div class="form-grid two">
+          <input id="saleName" placeholder="Nome da venda" />
+          <input id="saleDate" type="date" />
+          <select id="saleCategory"></select>
+          <input id="saleRevenue" type="number" step="0.01" placeholder="Preço de venda" />
+          <input id="saleCost" type="number" step="0.01" placeholder="Custo da venda" />
+          <input id="saleNote" placeholder="Observação" />
+        </div>
+        <div class="form-grid" style="margin-top:12px"><button class="btn primary" onclick="addSale()">Salvar venda</button></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h3>Gráfico de caixa</h3><p>Evolução de saldo e lucro</p></div><span class="chip">Chart.js</span></div>
+        <div class="chart-wrap"><canvas id="cashChart"></canvas></div>
+      </div>
+    </section>
+    <section class="grid-2">
+      <div class="panel">
+        <div class="panel-head"><div><h3>Vendas</h3><p>Edite tudo linha por linha</p></div><span class="chip">Tabela editável</span></div>
+        <table><thead><tr><th>Data</th><th>Venda</th><th>Categoria</th><th>Preço</th><th>Custo</th><th>Lucro</th><th>Margem</th><th>Ações</th></tr></thead><tbody id="salesTable"></tbody></table>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h3>Agenda</h3><p>Contas e compromissos</p></div><span class="chip">Próximos</span></div>
+        <div class="agenda-list" id="agendaList"></div>
+      </div>
+    </section>
+    <section class="grid-2">
+      <div id="fornecedores" class="panel">
+        <div class="panel-head"><div><h3>Fornecedores</h3><p>Cadastro editável</p></div><span class="chip">Base</span></div>
+        <div class="form-grid two" style="margin-bottom:12px">
+          <input id="supplierName" placeholder="Nome do fornecedor" />
+          <input id="supplierNote" placeholder="Observação" />
+        </div>
+        <button class="btn secondary" onclick="addSupplier()">Adicionar fornecedor</button>
+        <div class="supplier-list" id="supplierList" style="margin-top:12px"></div>
+      </div>
+      <div id="categorias" class="panel">
+        <div class="panel-head"><div><h3>Categorias</h3><p>Crie, edite e remova categorias</p></div><span class="chip">Editável</span></div>
+        <div class="form-grid two" style="margin-bottom:12px">
+          <input id="newCategory" placeholder="Nova categoria" />
+          <button class="btn secondary" onclick="addCategory()">Adicionar categoria</button>
+        </div>
+        <div class="category-list" id="categoryList"></div>
+      </div>
+    </section>
+    <section id="margem" class="grid-2">
+      <div class="panel">
+        <div class="panel-head"><div><h3>Margem por venda</h3><p>Não é total geral: é por venda individual</p></div><span class="chip">Cálculo real</span></div>
+        <table><thead><tr><th>Venda</th><th>Preço</th><th>Custo</th><th>Lucro</th><th>Margem</th></tr></thead><tbody id="marginTable"></tbody></table>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h3>Resumo visual</h3><p>Leitura rápida do período</p></div><span class="chip">Visão</span></div>
+        <div class="mini-list">
+          <div class="mini-item"><div><small>Saldo projetado</small><strong id="projectedBalance">R$ 0,00</strong></div><span class="badge ok">30 dias</span></div>
+          <div class="mini-item"><div><small>Maior lucro</small><strong id="topProfit">-</strong></div><span class="badge warn">Destaque</span></div>
+          <div class="mini-item"><div><small>Última venda</small><strong id="lastSale">-</strong></div><span class="badge risk">Recente</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+  const fmt = v => Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  let categories = ['Venda','Serviço','Produto','Frete','Imposto'];
+  let suppliers = [{name:'Fornecedor Alpha',note:'Entrega em 2 dias'},{name:'Fornecedor Beta',note:'Condição à vista'}];
+  let agenda = [{day:'25',mon:'JUN',title:'Aluguel',note:'Vencimento',type:'out'},{day:'30',mon:'JUN',title:'Recebimento',note:'Entrada prevista',type:'in'}];
+  let sales = [
+    {date:'2026-06-20',name:'Venda 01',category:'Produto',revenue:500,cost:300,note:'Pedido A'},
+    {date:'2026-06-18',name:'Venda 02',category:'Serviço',revenue:900,cost:250,note:'Pedido B'},
+    {date:'2026-06-15',name:'Venda 03',category:'Produto',revenue:1200,cost:700,note:'Pedido C'}
+  ];
+  const saleCategory = document.getElementById('saleCategory');
+  const salesTable = document.getElementById('salesTable');
+  const marginTable = document.getElementById('marginTable');
+  const supplierList = document.getElementById('supplierList');
+  const categoryList = document.getElementById('categoryList');
+  const agendaList = document.getElementById('agendaList');
+  let chart;
+  function renderCategoryOptions(){ saleCategory.innerHTML = categories.map(c=>`<option value="${c}">${c}</option>`).join(''); }
+  function renderCategories(){ categoryList.innerHTML = categories.map((c,i)=>`<div class="category-item"><div class="sale-top"><div><h4 style="margin:0 0 4px">${c}</h4><p>Categoria editável.</p></div><div class="actions"><button class="btn secondary" onclick="renameCategory(${i})">Editar</button><button class="btn danger" onclick="removeCategory(${i})">Excluir</button></div></div></div>`).join(''); }
+  function renderSuppliers(){ supplierList.innerHTML = suppliers.map((s,i)=>`<div class="supplier-card"><div class="supplier-top"><div><h4>${s.name}</h4><p>${s.note}</p></div><div class="actions"><button class="btn secondary" onclick="editSupplier(${i})">Editar</button><button class="btn danger" onclick="removeSupplier(${i})">Excluir</button></div></div></div>`).join(''); }
+  function renderAgenda(){ agendaList.innerHTML = agenda.map(a=>`<div class="agenda-item"><div class="date-card"><strong>${a.day}</strong><span>${a.mon}</span></div><div><h4 contenteditable="true" onblur="updateAgendaTitle(${agenda.indexOf(a)}, this.innerText)">${a.title}</h4><p contenteditable="true" onblur="updateAgendaNote(${agenda.indexOf(a)}, this.innerText)">${a.note}</p><div class="agenda-meta"><span class="tag ${a.type==='in'?'green':'amber'}">${a.type==='in'?'Entrada':'Saída'}</span></div></div></div>`).join(''); }
+  function renderSales(){
+    const sorted = [...sales].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    salesTable.innerHTML = sorted.map((s,idx)=>{
+      const profit = s.revenue - s.cost;
+      const margin = s.revenue ? (profit/s.revenue)*100 : 0;
+      return `<tr><td contenteditable="true" onblur="editSaleField('${s.date}','name',this.innerText)">${s.date.split('-').reverse().join('/')}</td><td contenteditable="true" onblur="editSaleFieldByIndex(${sales.indexOf(s)},'name',this.innerText)">${s.name}</td><td><select onchange="editSaleFieldByIndex(${sales.indexOf(s)},'category',this.value)">${categories.map(c=>`<option ${c===s.category?'selected':''}>${c}</option>`).join('')}</select></td><td contenteditable="true" onblur="editSaleNum(${sales.indexOf(s)},'revenue',this.innerText)">${fmt(s.revenue)}</td><td contenteditable="true" onblur="editSaleNum(${sales.indexOf(s)},'cost',this.innerText)">${fmt(s.cost)}</td><td>${fmt(profit)}</td><td>${margin.toFixed(1)}%</td><td class="actions"><button class="btn secondary" onclick="duplicateSale(${sales.indexOf(s)})">Duplicar</button><button class="btn danger" onclick="removeSale(${sales.indexOf(s)})">Excluir</button></td></tr>`;
+    }).join('');
+    marginTable.innerHTML = sorted.map(s=>{const p=s.revenue-s.cost; const m=s.revenue?(p/s.revenue)*100:0; return `<tr><td>${s.name}</td><td>${fmt(s.revenue)}</td><td>${fmt(s.cost)}</td><td>${fmt(p)}</td><td>${m.toFixed(1)}%</td></tr>`;}).join('');
+  }
+  function updateKPIs(){
+    const inTotal = sales.reduce((a,b)=>a+b.revenue,0);
+    const outTotal = sales.reduce((a,b)=>a+b.cost,0);
+    const profit = inTotal-outTotal;
+    const avgMargin = inTotal ? (profit/inTotal)*100 : 0;
+    const projected = profit + inTotal*0.2 - outTotal*0.1;
+    const topProfit = [...sales].map(s=>({name:s.name,p:s.revenue-s.cost})).sort((a,b)=>b.p-a.p)[0];
+    const lastSale = [...sales].sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+    document.getElementById('heroIncome').textContent = fmt(inTotal);
+    document.getElementById('heroExpense').textContent = fmt(outTotal);
+    document.getElementById('heroProfit').textContent = fmt(profit);
+    document.getElementById('heroBalance').textContent = fmt(profit);
+    document.getElementById('balanceCard').textContent = fmt(profit);
+    document.getElementById('profitCard').textContent = fmt(profit);
+    document.getElementById('costCard').textContent = fmt(outTotal);
+    document.getElementById('marginCard').textContent = avgMargin.toFixed(1)+'%';
+    document.getElementById('avgMargin').textContent = avgMargin.toFixed(1)+'%';
+    document.getElementById('saleCount').textContent = sales.length;
+    document.getElementById('taskCount').textContent = agenda.length;
+    document.getElementById('projectedBalance').textContent = fmt(projected);
+    document.getElementById('topProfit').textContent = topProfit ? `${topProfit.name} (${fmt(topProfit.p)})` : '-';
+    document.getElementById('lastSale').textContent = lastSale ? `${lastSale.name} • ${lastSale.date.split('-').reverse().join('/')}` : '-';
+    const labels = sales.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).map(s=>s.date.split('-').reverse().join('/'));
+    const balanceSeries = [];
+    let run = 0;
+    sales.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(s=>{run += (s.revenue-s.cost); balanceSeries.push(run)});
+    if(chart) chart.destroy();
+    chart = new Chart(document.getElementById('cashChart'), {type:'line', data:{labels,datasets:[{label:'Lucro acumulado',data:balanceSeries,borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.12)',fill:true,tension:.35,pointRadius:4}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>'R$ '+v.toFixed(0)}}}}});
+  }
+  function addSale(){
+    const data = document.getElementById('saleDate').value;
+    const name = document.getElementById('saleName').value.trim();
+    const category = document.getElementById('saleCategory').value;
+    const revenue = parseFloat(document.getElementById('saleRevenue').value);
+    const cost = parseFloat(document.getElementById('saleCost').value);
+    const note = document.getElementById('saleNote').value.trim();
+    if(!data || !name || isNaN(revenue) || isNaN(cost)) return alert('Preencha data, nome, preço e custo.');
+    sales.push({date:data,name,category,revenue,cost,note});
+    document.getElementById('saleName').value=''; document.getElementById('saleRevenue').value=''; document.getElementById('saleCost').value=''; document.getElementById('saleNote').value='';
+    updateAll();
+  }
+  function removeSale(i){ sales.splice(i,1); updateAll(); }
+  function duplicateSale(i){ sales.push({...sales[i], name:sales[i].name+' копия'}); updateAll(); }
+  function editSaleFieldByIndex(i,k,v){ sales[i][k]=v; updateAll(); }
+  function editSaleNum(i,k,v){ sales[i][k]=parseFloat(String(v).replace(/[^\d,.-]/g,'').replace(',','.'))||0; updateAll(); }
+  function addCategory(){ const v=document.getElementById('newCategory').value.trim(); if(!v) return; categories.push(v); document.getElementById('newCategory').value=''; updateAll(); }
+  function renameCategory(i){ const v=prompt('Novo nome da categoria:', categories[i]); if(v) { categories[i]=v; updateAll(); } }
+  function removeCategory(i){ if(confirm('Excluir categoria?')) { categories.splice(i,1); updateAll(); } }
+  function addSupplier(){ const n=document.getElementById('supplierName').value.trim(); const note=document.getElementById('supplierNote').value.trim(); if(!n) return; suppliers.push({name:n,note}); document.getElementById('supplierName').value=''; document.getElementById('supplierNote').value=''; updateAll(); }
+  function editSupplier(i){ const n=prompt('Nome do fornecedor:', suppliers[i].name); if(n===null) return; const note=prompt('Observação:', suppliers[i].note); if(note===null) return; suppliers[i]={name:n,note}; updateAll(); }
+  function removeSupplier(i){ if(confirm('Excluir fornecedor?')) { suppliers.splice(i,1); updateAll(); } }
+  function updateAgendaTitle(i,v){ agenda[i].title=v; }
+  function updateAgendaNote(i,v){ agenda[i].note=v; }
+  function saveLocal(){ localStorage.setItem('movva_sales', JSON.stringify(sales)); localStorage.setItem('movva_categories', JSON.stringify(categories)); localStorage.setItem('movva_suppliers', JSON.stringify(suppliers)); localStorage.setItem('movva_agenda', JSON.stringify(agenda)); alert('Dados salvos no navegador.'); }
+  function loadLocal(){ const s=localStorage.getItem('movva_sales'); const c=localStorage.getItem('movva_categories'); const p=localStorage.getItem('movva_suppliers'); const a=localStorage.getItem('movva_agenda'); if(s) sales=JSON.parse(s); if(c) categories=JSON.parse(c); if(p) suppliers=JSON.parse(p); if(a) agenda=JSON.parse(a); }
+  function exportCSV(){
+    const rows = [['data','nome','categoria','receita','custo','lucro','margem']];
+    sales.forEach(s=>{const profit=s.revenue-s.cost; const margin=s.revenue?(profit/s.revenue)*100:0; rows.push([s.date,s.name,s.category,s.revenue,s.cost,profit,margin.toFixed(1)]);});
+    const csv = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='movva-control.csv'; a.click(); URL.revokeObjectURL(url);
+  }
+  function loadSample(){ sales=[{date:'2026-06-20',name:'Venda 01',category:'Produto',revenue:500,cost:300,note:'Pedido A'},{date:'2026-06-18',name:'Venda 02',category:'Serviço',revenue:900,cost:250,note:'Pedido B'},{date:'2026-06-15',name:'Venda 03',category:'Produto',revenue:1200,cost:700,note:'Pedido C'}]; categories=['Venda','Serviço','Produto','Frete','Imposto']; suppliers=[{name:'Fornecedor Alpha',note:'Entrega em 2 dias'},{name:'Fornecedor Beta',note:'Condição à vista'}]; agenda=[{day:'25',mon:'JUN',title:'Aluguel',note:'Vencimento',type:'out'},{day:'30',mon:'JUN',title:'Recebimento',note:'Entrada prevista',type:'in'}]; updateAll(); }
+  function updateAll(){ renderCategoryOptions(); renderCategories(); renderSuppliers(); renderAgenda(); renderSales(); updateKPIs(); }
+  document.getElementById('saleDate').value = new Date().toISOString().slice(0,10);
+  loadLocal(); updateAll();
+</script>
+</body>
+</html>
